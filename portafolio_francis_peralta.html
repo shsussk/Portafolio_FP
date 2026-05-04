@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Francis Javiela Peralta — Oficial PMO · CLAC</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --vb:#1B4332;--vs:#52796F;--vc:#84A98C;--vp:#CAD2C5;
+  --crema:#F8F5F0;--dorado:#B7883A;--dc:#E9C46A;
+  --carbon:#1A1A1A;--gris:#6B7280;--blanco:#FFFFFF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--crema);color:var(--carbon);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(27,67,50,.97);backdrop-filter:blur(12px);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{font-family:'Playfair Display',serif;color:var(--crema);font-size:1rem;letter-spacing:.02em;white-space:nowrap}
+.nav-links{display:flex;gap:20px;list-style:none}
+.nav-links a{color:var(--vp);text-decoration:none;font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--dc)}
+
+/* HERO */
+.hero{min-height:100vh;background:var(--vb);display:flex;align-items:center;position:relative;overflow:hidden;padding:80px 80px 60px}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(132,169,140,.12) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(183,136,58,.08) 0%,transparent 50%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:60px 60px}
+.hero-content{position:relative;z-index:2;max-width:900px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(183,136,58,.15);border:1px solid rgba(183,136,58,.3);border-radius:100px;padding:6px 16px;margin-bottom:32px;animation:fadeUp .6s ease both}
+.hero-badge span{color:var(--dc);font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.hero-dot{width:6px;height:6px;background:var(--dc);border-radius:50%;animation:pulse 2s infinite}
+.hero-name{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.5rem);color:var(--crema);line-height:1.1;margin-bottom:20px;animation:fadeUp .7s ease .1s both}
+.hero-name em{color:var(--vc);font-style:normal}
+.hero-tagline{font-size:1.2rem;color:var(--vp);line-height:1.6;max-width:640px;margin-bottom:48px;font-weight:300;animation:fadeUp .7s ease .2s both}
+.hero-stats{display:flex;gap:48px;animation:fadeUp .7s ease .3s both}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.4rem;color:var(--dc);font-weight:600;line-height:1}
+.stat-label{font-size:.78rem;color:var(--vp);margin-top:4px;letter-spacing:.04em}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--vc);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;animation:fadeIn 1s ease 1s both}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--vc),transparent);animation:scrollLine 2s ease-in-out infinite}
+
+/* WELCOME VIDEO */
+.video-welcome{background:var(--carbon);padding:100px 80px;position:relative;overflow:hidden}
+.video-welcome::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(27,67,50,.4) 0%,transparent 70%)}
+.video-welcome .section-label span{color:var(--dc)}
+.video-welcome .section-title{color:var(--crema)}
+.video-welcome .section-sub{color:rgba(255,255,255,.45)}
+.video-wrapper{position:relative;max-width:880px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5);background:#000}
+.video-wrapper video,.video-wrapper iframe{width:100%;display:block;aspect-ratio:16/9;border:none}
+.video-empty-state{aspect-ratio:16/9;background:linear-gradient(135deg,var(--vb),#071a0e);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.video-empty-state .big-icon{font-size:3rem;opacity:.4}
+.video-empty-state p{color:var(--vp);font-size:.9rem}
+.video-empty-state .upload-hint{font-size:.75rem;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace}
+.welcome-edit-btn{position:absolute;top:16px;right:16px;background:rgba(183,136,58,.9);border:none;border-radius:8px;padding:8px 14px;color:white;font-size:.78rem;font-weight:600;cursor:pointer;display:none;z-index:10;transition:all .2s}
+.welcome-edit-btn:hover{background:var(--dorado)}
+
+/* SECTIONS */
+section{padding:100px 80px}
+.section-label{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.section-label span{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--dorado);letter-spacing:.12em;text-transform:uppercase}
+.section-line{flex:1;height:1px;background:linear-gradient(to right,var(--dorado),transparent);max-width:60px}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);color:var(--vb);line-height:1.2;margin-bottom:16px}
+.section-sub{font-size:1rem;color:var(--gris);max-width:560px;line-height:1.7;margin-bottom:60px}
+
+/* PROPUESTA */
+.propuesta{background:var(--crema)}
+.diferenciadores{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.dif-card{background:var(--blanco);border:1px solid var(--vp);border-radius:16px;padding:32px;transition:all .3s;cursor:default;position:relative;overflow:hidden}
+.dif-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:var(--vs);transition:height .3s}
+.dif-card:hover{border-color:var(--vs);transform:translateY(-4px);box-shadow:0 12px 40px rgba(27,67,50,.1)}
+.dif-card:hover::before{height:100%}
+.dif-num{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--dorado);letter-spacing:.1em;margin-bottom:12px}
+.dif-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--vb);margin-bottom:10px;font-weight:600}
+.dif-desc{font-size:.88rem;color:var(--gris);line-height:1.6}
+
+/* LOGROS */
+.logros{background:var(--vb)}
+.logros .section-title{color:var(--crema)}
+.logros .section-sub{color:var(--vp)}
+.logros .section-label span{color:var(--dc)}
+.metricas{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.metrica-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:36px 28px;text-align:center;transition:all .3s}
+.metrica-card:hover{background:rgba(255,255,255,.08);border-color:rgba(233,196,106,.3);transform:translateY(-4px)}
+.metrica-num{font-family:'Playfair Display',serif;font-size:3rem;color:var(--dc);font-weight:700;line-height:1;margin-bottom:8px}
+.metrica-label{font-size:.82rem;color:var(--vp);line-height:1.5}
+
+/* PMO */
+.pmo-section{background:var(--crema)}
+.pmo-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.pmo-pilares{display:flex;flex-direction:column;gap:16px}
+.pilar{display:flex;gap:20px;align-items:flex-start;padding:24px;background:var(--blanco);border-radius:12px;border:1px solid var(--vp);transition:all .3s}
+.pilar:hover{border-color:var(--vs);box-shadow:0 8px 24px rgba(27,67,50,.08)}
+.pilar-icon{width:44px;height:44px;background:var(--vb);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.pilar-title{font-weight:600;color:var(--vb);margin-bottom:4px;font-size:.95rem}
+.pilar-desc{font-size:.82rem;color:var(--gris);line-height:1.5}
+.pmo-quote{background:var(--vb);border-radius:20px;padding:48px;color:var(--crema);position:sticky;top:80px}
+.pmo-quote-text{font-family:'Playfair Display',serif;font-size:1.4rem;line-height:1.6;margin-bottom:32px;color:var(--crema)}
+.pmo-quote-text em{color:var(--dc);font-style:normal}
+.pmo-tipos{display:flex;flex-direction:column;gap:12px}
+.pmo-tipo{display:flex;align-items:center;gap:12px}
+.pmo-tipo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pmo-tipo-dot.activo{background:var(--dc)}
+.pmo-tipo-label{font-size:.82rem;color:var(--vp)}
+.pmo-tipo-label strong{color:var(--crema);font-weight:500}
+
+/* METODOLOGÍA */
+.metodologia{background:#F0F4F1}
+.ciclo{display:flex;flex-wrap:wrap}
+.ciclo-step{flex:1;min-width:120px;text-align:center;position:relative;padding:0 8px}
+.ciclo-step:not(:last-child)::after{content:'→';position:absolute;right:-8px;top:28px;color:var(--vs);font-size:1.2rem}
+.ciclo-num-wrap{width:56px;height:56px;background:var(--vb);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;transition:all .3s;cursor:default}
+.ciclo-step:hover .ciclo-num-wrap{background:var(--dorado);transform:scale(1.1)}
+.ciclo-num{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--crema);font-weight:500}
+.ciclo-label{font-size:.75rem;color:var(--vb);font-weight:500;line-height:1.3}
+.herramientas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:60px}
+.herramienta-tag{background:var(--blanco);border:1px solid var(--vp);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:10px;transition:all .2s}
+.herramienta-tag:hover{border-color:var(--vs);background:var(--vb)}
+.herramienta-tag:hover .htag-label{color:var(--crema)}
+.htag-icon{font-size:1.2rem}
+.htag-label{font-size:.82rem;font-weight:500;color:var(--vb);transition:color .2s}
+
+/* ── PORTAFOLIO ─────────────────────────────────────── */
+.portafolio{background:var(--crema)}
+.proyectos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+
+/* Empty state (no projects yet) */
+.empty-portfolio{grid-column:1/-1;text-align:center;padding:80px 40px;border:2px dashed var(--vp);border-radius:20px;color:var(--gris)}
+.empty-portfolio span{font-size:3.5rem;display:block;margin-bottom:16px;opacity:.4}
+.empty-portfolio p{font-size:1rem;color:var(--vb);font-weight:600;margin-bottom:8px}
+.empty-portfolio small{font-size:.85rem}
+
+/* Project card */
+.proyecto-card{background:var(--blanco);border:1px solid var(--vp);border-radius:20px;overflow:hidden;transition:all .3s;cursor:pointer;position:relative}
+.proyecto-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(27,67,50,.14);border-color:var(--vs)}
+.proyecto-card.hidden{display:none}
+.proyecto-thumb{height:160px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;font-size:3rem}
+.play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.proyecto-card:hover .play-overlay{opacity:1}
+.play-circle{width:52px;height:52px;background:rgba(183,136,58,.9);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.play-circle svg{width:20px;height:20px;fill:white;margin-left:3px}
+.proyecto-body{padding:22px}
+.proyecto-categoria{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dorado);margin-bottom:6px}
+.proyecto-titulo{font-weight:600;color:var(--vb);font-size:.95rem;line-height:1.35;margin-bottom:8px}
+.proyecto-desc{font-size:.8rem;color:var(--gris);line-height:1.5;margin-bottom:14px}
+.media-badges{display:flex;flex-wrap:wrap;gap:5px}
+.media-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:100px;font-size:.66rem;font-weight:500;text-transform:uppercase}
+.mb-video{background:rgba(220,38,38,.1);color:#dc2626}
+.mb-foto{background:rgba(16,185,129,.1);color:#059669}
+.mb-pdf{background:rgba(37,99,235,.1);color:#2563eb}
+.mb-word{background:rgba(37,99,235,.08);color:#1d4ed8}
+.mb-excel{background:rgba(5,150,105,.1);color:#059669}
+.mb-ppt{background:rgba(234,88,12,.1);color:#ea580c}
+.mb-link{background:rgba(107,114,128,.1);color:#6b7280}
+
+/* Card admin overlay */
+.card-edit-overlay{display:none;position:absolute;inset:0;background:rgba(27,67,50,.88);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:5}
+.admin-mode .card-edit-overlay{display:flex}
+.card-edit-btn{background:var(--dc);border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.82rem;color:var(--carbon);cursor:pointer;transition:all .2s}
+.card-edit-btn:hover{background:white}
+.card-del-btn{background:rgba(220,38,38,.8);border:none;border-radius:10px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.78rem;color:white;cursor:pointer;transition:all .2s}
+.card-del-btn:hover{background:#dc2626}
+
+/* ── GALERÍA DE FOTOS ────────────────────────────────── */
+.galeria{background:#F0F4F1}
+.galeria .section-title{color:var(--vb)}
+.photo-grid{columns:3;column-gap:16px}
+.photo-grid .photo-item{break-inside:avoid;margin-bottom:16px;border-radius:14px;overflow:hidden;cursor:zoom-in;position:relative}
+.photo-grid .photo-item img{width:100%;display:block;transition:transform .3s}
+.photo-grid .photo-item:hover img{transform:scale(1.03)}
+.photo-grid-empty{text-align:center;padding:80px 40px;border:2px dashed var(--vp);border-radius:20px;color:var(--gris)}
+.photo-grid-empty span{font-size:3rem;display:block;margin-bottom:12px;opacity:.4}
+.photo-grid-empty p{font-size:.95rem;color:var(--vb);font-weight:600;margin-bottom:6px}
+
+/* delete photo btn (admin mode) */
+.photo-del-btn{position:absolute;top:8px;right:8px;background:rgba(220,38,38,.85);border:none;border-radius:6px;width:28px;height:28px;color:white;font-size:.9rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .2s}
+.admin-mode .photo-del-btn{display:flex}
+.photo-del-btn:hover{background:#dc2626}
+
+/* Photo upload zone (admin mode) */
+.photo-upload-zone{display:none;border:2px dashed var(--vp);border-radius:16px;padding:48px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:32px}
+.admin-mode .photo-upload-zone{display:block}
+.photo-upload-zone:hover,.photo-upload-zone.drag-over{border-color:var(--vs);background:rgba(82,121,111,.05)}
+.photo-upload-zone .puz-icon{font-size:2.5rem;display:block;margin-bottom:12px}
+.photo-upload-zone p{font-size:.88rem;color:var(--vb);font-weight:500}
+.photo-upload-zone small{font-size:.75rem;color:var(--gris)}
+
+/* CLAC */
+.clac-section{background:var(--vb);position:relative;overflow:hidden}
+.clac-section::before{content:'CLAC';position:absolute;right:-20px;top:50%;transform:translateY(-50%);font-family:'Playfair Display',serif;font-size:20rem;color:rgba(255,255,255,.03);font-weight:700;line-height:1;user-select:none}
+.clac-section .section-title{color:var(--crema)}
+.clac-section .section-sub{color:var(--vp)}
+.clac-section .section-label span{color:var(--dc)}
+.conexiones{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.conexion-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px;transition:all .3s}
+.conexion-card:hover{background:rgba(255,255,255,.08);border-color:rgba(233,196,106,.25)}
+.conexion-icon{font-size:2rem;margin-bottom:16px}
+.conexion-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--crema);margin-bottom:10px}
+.conexion-desc{font-size:.85rem;color:var(--vp);line-height:1.6}
+.conexion-desc strong{color:var(--dc);font-weight:500}
+
+/* CIERRE */
+.cierre{background:var(--crema);text-align:center;padding:100px 80px}
+.cierre-frase{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);color:var(--vb);max-width:700px;margin:0 auto 40px;line-height:1.4}
+.cierre-frase em{color:var(--vs);font-style:normal;border-bottom:2px solid var(--dorado)}
+.cierre-contacto{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.contacto-item{display:flex;align-items:center;gap:10px;color:var(--gris);font-size:.9rem}
+.contacto-item strong{color:var(--vb)}
+
+/* FOOTER */
+footer{background:var(--vb);padding:24px 80px;display:flex;justify-content:space-between;align-items:center}
+footer span{font-size:.78rem;color:var(--vp)}
+
+/* ── ADMIN TOGGLE FAB ────────────────────────────────── */
+.admin-fab{position:fixed;bottom:32px;right:32px;z-index:300;background:var(--vb);border:none;border-radius:100px;padding:14px 22px;color:var(--crema);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 8px 32px rgba(0,0,0,.25);display:flex;align-items:center;gap:8px;transition:all .3s}
+.admin-fab:hover{background:var(--vs);transform:translateY(-2px)}
+.admin-fab.active{background:var(--dorado);color:var(--carbon)}
+.admin-fab svg{width:16px;height:16px;fill:currentColor}
+
+/* ── ADMIN PANEL ─────────────────────────────────────── */
+.admin-panel{position:fixed;top:0;right:-560px;width:540px;height:100vh;z-index:400;background:var(--blanco);box-shadow:-8px 0 40px rgba(0,0,0,.2);transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+.admin-panel.open{right:0}
+.ap-header{background:var(--vb);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ap-header h2{font-family:'Playfair Display',serif;color:var(--crema);font-size:1.1rem}
+.ap-header p{color:var(--vp);font-size:.75rem;margin-top:2px}
+.ap-close{background:rgba(255,255,255,.1);border:none;border-radius:8px;width:36px;height:36px;color:var(--crema);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ap-close:hover{background:rgba(255,255,255,.2)}
+.ap-export-btn{background:var(--dorado);border:none;border-radius:8px;padding:8px 14px;color:var(--carbon);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap}
+.ap-export-btn:hover{background:var(--dc);transform:translateY(-1px)}
+.ap-export-btn.loading{opacity:.7;pointer-events:none}
+.ap-body{flex:1;overflow-y:auto;padding:16px}
+.ap-body::-webkit-scrollbar{width:5px}
+.ap-body::-webkit-scrollbar-thumb{background:var(--vp);border-radius:3px}
+
+/* New project button */
+.ap-new-proj-btn{width:100%;padding:14px;background:var(--vb);color:var(--crema);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;transition:all .2s}
+.ap-new-proj-btn:hover{background:var(--vs)}
+
+/* New project form */
+.ap-new-proj-form{background:var(--crema);border:1px solid var(--vp);border-radius:14px;padding:20px;margin-bottom:12px;display:none}
+.ap-new-proj-form.open{display:block}
+.ap-form-label{font-size:.75rem;font-weight:600;color:var(--vb);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;margin-top:14px;display:block}
+.ap-form-label:first-child{margin-top:0}
+.ap-form-input{width:100%;padding:10px 12px;border:1px solid var(--vp);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:white;transition:border .2s}
+.ap-form-input:focus{border-color:var(--vs)}
+.ap-emoji-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.ap-emoji-opt{width:38px;height:38px;border:2px solid var(--vp);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all .2s;background:white}
+.ap-emoji-opt:hover,.ap-emoji-opt.sel{border-color:var(--vs);background:rgba(82,121,111,.08)}
+.ap-color-row{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.ap-color-opt{width:32px;height:32px;border-radius:8px;cursor:pointer;border:3px solid transparent;transition:all .2s}
+.ap-color-opt.sel{border-color:var(--carbon);transform:scale(1.15)}
+.ap-form-actions{display:flex;gap:8px;margin-top:16px}
+.ap-form-save{flex:1;padding:10px;background:var(--vb);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.ap-form-save:hover{background:var(--vs)}
+.ap-form-cancel{padding:10px 18px;border:1px solid var(--vp);background:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;color:var(--gris)}
+
+/* Divider */
+.ap-divider{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--gris);letter-spacing:.1em;text-transform:uppercase;padding:12px 4px 8px;border-top:1px solid var(--vp);margin-top:4px}
+
+/* Project section in panel */
+.ap-project{border:1px solid var(--vp);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.ap-project-head{padding:13px 16px;background:var(--crema);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:background .2s}
+.ap-project-head:hover{background:#eef2ee}
+.ap-ph-left{display:flex;align-items:center;gap:10px}
+.ap-emoji{font-size:1.2rem}
+.ap-proj-name{font-weight:600;font-size:.85rem;color:var(--vb);line-height:1.2}
+.ap-proj-cat{font-size:.7rem;color:var(--gris);font-family:'DM Mono',monospace}
+.ap-count{background:var(--vb);color:var(--crema);border-radius:100px;padding:2px 8px;font-size:.68rem;font-weight:600;min-width:22px;text-align:center;flex-shrink:0}
+.ap-count.empty{background:var(--vp);color:var(--gris)}
+.ap-chevron{color:var(--gris);font-size:.85rem;transition:transform .2s;flex-shrink:0}
+.ap-project.expanded .ap-chevron{transform:rotate(180deg)}
+.ap-project-body{display:none;padding:14px;border-top:1px solid var(--vp)}
+.ap-project.expanded .ap-project-body{display:block}
+.ap-media-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.ap-media-item{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--crema);border-radius:9px;border:1px solid var(--vp)}
+.ap-mi-icon{font-size:1.2rem;flex-shrink:0}
+.ap-mi-info{flex:1;min-width:0}
+.ap-mi-name{font-size:.8rem;font-weight:600;color:var(--vb);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-mi-meta{font-size:.7rem;color:var(--gris);font-family:'DM Mono',monospace}
+.ap-mi-del{background:none;border:none;cursor:pointer;color:var(--gris);font-size:.95rem;padding:4px;border-radius:5px;transition:all .2s;flex-shrink:0}
+.ap-mi-del:hover{background:rgba(220,38,38,.1);color:#dc2626}
+.ap-empty{text-align:center;padding:16px;color:var(--gris);font-size:.8rem;background:var(--crema);border-radius:9px;border:2px dashed var(--vp);margin-bottom:12px}
+.ap-add-area{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ap-add-btn{padding:9px;border:2px dashed var(--vp);border-radius:9px;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;color:var(--vs);display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s}
+.ap-add-btn:hover{border-color:var(--vs);background:rgba(82,121,111,.06)}
+.ap-link-form{display:none;margin-top:9px;padding:12px;background:var(--crema);border-radius:9px;border:1px solid var(--vp)}
+.ap-link-form.open{display:block}
+.ap-link-input{width:100%;padding:9px 11px;border:1px solid var(--vp);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.83rem;outline:none;transition:border .2s;margin-bottom:6px}
+.ap-link-input:focus{border-color:var(--vs)}
+.ap-link-name{width:100%;padding:8px 11px;border:1px solid var(--vp);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.8rem;outline:none;transition:border .2s}
+.ap-link-name:focus{border-color:var(--vs)}
+.ap-link-actions{display:flex;gap:7px;margin-top:9px}
+.ap-link-save{flex:1;padding:8px;background:var(--vb);color:white;border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.ap-link-save:hover{background:var(--vs)}
+.ap-link-cancel{padding:8px 14px;border:1px solid var(--vp);background:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;color:var(--gris)}
+.drop-zone{border:2px dashed var(--vp);border-radius:11px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-top:9px;display:none}
+.drop-zone.open{display:block}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--vs);background:rgba(82,121,111,.05)}
+.drop-zone .dz-icon{font-size:1.8rem;margin-bottom:6px}
+.drop-zone p{font-size:.8rem;color:var(--gris)}
+.drop-zone small{font-size:.7rem;color:var(--vp);font-family:'DM Mono',monospace}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--blanco);border-radius:24px;width:100%;max-width:900px;max-height:90vh;overflow-y:auto;position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:50%;background:var(--crema);border:1px solid var(--vp);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:10}
+.modal-close:hover{background:var(--vb);color:white;border-color:var(--vb)}
+.modal-header{padding:36px 36px 24px;border-bottom:1px solid var(--vp)}
+.modal-cat{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dorado);margin-bottom:8px}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--vb);line-height:1.3;margin-bottom:8px}
+.modal-desc{font-size:.88rem;color:var(--gris);line-height:1.6}
+.modal-tabs{display:flex;padding:0 36px;border-bottom:1px solid var(--vp);overflow-x:auto;gap:0}
+.modal-tab{padding:13px 18px;font-size:.82rem;font-weight:500;color:var(--gris);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:5px;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;transition:all .2s}
+.modal-tab:hover{color:var(--vb)}
+.modal-tab.active{color:var(--vb);border-bottom-color:var(--dorado)}
+.modal-content{padding:28px 36px 36px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.modal-empty{text-align:center;padding:48px;color:var(--gris)}
+.modal-empty span{font-size:3rem;display:block;margin-bottom:12px}
+.modal-empty strong{display:block;color:var(--vb);margin-bottom:6px}
+
+/* media viewers */
+.media-video-wrap{border-radius:12px;overflow:hidden;background:#000;margin-bottom:16px}
+.media-video-wrap video,.media-video-wrap iframe{width:100%;aspect-ratio:16/9;display:block;border:none}
+.media-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.gallery-img{border-radius:12px;overflow:hidden;aspect-ratio:4/3;cursor:zoom-in}
+.gallery-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.gallery-img:hover img{transform:scale(1.05)}
+.media-pdf-wrap{border-radius:12px;overflow:hidden;border:1px solid var(--vp);margin-bottom:12px}
+.media-pdf-wrap iframe{width:100%;height:500px;border:none;display:block}
+.media-downloads{display:flex;flex-direction:column;gap:10px}
+.dl-item{display:flex;align-items:center;gap:14px;padding:13px 17px;background:var(--crema);border-radius:12px;border:1px solid var(--vp);text-decoration:none;cursor:pointer;transition:all .2s}
+.dl-item:hover{border-color:var(--vs);background:var(--blanco);box-shadow:0 4px 16px rgba(27,67,50,.08)}
+.dl-icon-big{font-size:1.5rem;flex-shrink:0}
+.dl-info{flex:1;min-width:0}
+.dl-name{font-weight:600;font-size:.88rem;color:var(--vb);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-meta{font-size:.75rem;color:var(--gris)}
+.dl-action{padding:7px 14px;background:var(--vb);color:var(--crema);border-radius:8px;font-size:.75rem;font-weight:600;flex-shrink:0}
+.media-links{display:flex;flex-direction:column;gap:10px}
+.link-item{display:flex;align-items:center;gap:14px;padding:13px 17px;background:var(--crema);border-radius:12px;border:1px solid var(--vp);text-decoration:none;transition:all .2s}
+.link-item:hover{border-color:var(--vs);background:var(--blanco)}
+.link-icon{font-size:1.4rem}
+.link-info{flex:1;min-width:0}
+.link-name{font-weight:600;font-size:.88rem;color:var(--vb)}
+.link-url{font-size:.7rem;color:var(--gris);font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-open{padding:7px 14px;background:var(--vb);color:var(--crema);border-radius:8px;font-size:.75rem;font-weight:600;flex-shrink:0}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.94);align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:92vw;max-height:92vh;border-radius:8px;object-fit:contain}
+.lb-close{position:fixed;top:20px;right:24px;color:white;font-size:2rem;cursor:pointer;background:none;border:none;z-index:601;line-height:1}
+
+/* TOAST */
+.toast{position:fixed;bottom:100px;right:32px;z-index:1000;background:var(--vb);color:var(--crema);padding:11px 18px;border-radius:10px;font-size:.82rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{background:#059669}
+.toast.err{background:#dc2626}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+@keyframes scrollLine{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.4;transform:scaleY(.6)}}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+  section{padding:60px 24px}
+  .hero{padding:80px 24px 60px}
+  .hero-stats{gap:24px;flex-wrap:wrap}
+  .pmo-grid{grid-template-columns:1fr}
+  .conexiones{grid-template-columns:1fr}
+  nav{padding:0 20px}
+  .nav-links{gap:12px}
+  .ciclo-step:not(:last-child)::after{display:none}
+  footer{flex-direction:column;gap:8px;text-align:center}
+  .video-welcome{padding:60px 24px}
+  .admin-panel{width:100%;right:-100%}
+  .admin-panel.open{right:0}
+  .modal-header,.modal-content{padding:24px}
+  .modal-tabs{padding:0 24px}
+  .photo-grid{columns:2}
+}
+/* LOGIN FORM */
+.ap-login{padding:24px;display:flex;flex-direction:column;gap:10px}
+.ap-login-input{width:100%;padding:10px 12px;border:1px solid var(--vp);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:white;transition:border .2s}
+.ap-login-input:focus{border-color:var(--vs)}
+.ap-login-btn{width:100%;padding:11px;background:var(--vb);color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+.ap-login-btn:hover{background:var(--vs)}
+.ap-login-btn:disabled{opacity:.6;pointer-events:none}
+.ap-login-error{font-size:.78rem;color:#dc2626;min-height:1em;text-align:center}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Francis J. Peralta</div>
+  <ul class="nav-links">
+    <li><a href="#video">Video</a></li>
+    <li><a href="#propuesta">Propuesta</a></li>
+    <li><a href="#logros">Logros</a></li>
+    <li><a href="#pmo">PMO</a></li>
+    <li><a href="#portafolio">Proyectos</a></li>
+    <li><a href="#galeria">Fotos</a></li>
+    <li><a href="#clac">CLAC</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="hero-dot"></div><span>Candidata · Oficial de PMO · CLAC</span></div>
+    <h1 class="hero-name">Francis Javiela<br><em>Peralta</em></h1>
+    <p class="hero-tagline">Construí una PMO desde diagnóstico cero en contexto agrícola.<br>Vengo del territorio donde CLAC opera — y tengo los números que lo demuestran.</p>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">4+</div><div class="stat-label">Años en gestión<br>de proyectos</div></div>
+      <div class="stat-item"><div class="stat-num">40%</div><div class="stat-label">Reducción en<br>tiempo de reporte</div></div>
+      <div class="stat-item"><div class="stat-num">54</div><div class="stat-label">Ensayos analizados<br>históricamente</div></div>
+      <div class="stat-item"><div class="stat-num">15</div><div class="stat-label">Capacidad anual<br>de portafolio</div></div>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Explorar</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- VIDEO DE BIENVENIDA -->
+<section class="video-welcome" id="video">
+  <div class="section-label"><span>00 — Video de bienvenida</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Antes de explorar el portafolio</h2>
+  <p class="section-sub reveal">Un mensaje directo para el equipo de CLAC sobre por qué estoy aquí y qué puedo aportar.</p>
+  <div class="video-wrapper reveal" style="position:relative">
+    <button class="welcome-edit-btn" id="welcomeEditBtn" onclick="openAdminAt('welcome')">✏️ Cambiar video</button>
+    <div id="welcomeContainer">
+      <div class="video-empty-state" id="welcomeEmpty">
+        <span class="big-icon">🎬</span>
+        <p>Video de bienvenida</p>
+        <p class="upload-hint">Activa "Gestionar contenido" para agregar tu video</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPUESTA DE VALOR -->
+<section class="propuesta" id="propuesta">
+  <div class="section-label"><span>01 — Propuesta de valor</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Lo que me diferencia</h2>
+  <p class="section-sub reveal">No vengo a operar una PMO que ya existe — vengo habiendo construido una desde cero, con resultados medibles y en el contexto exacto donde CLAC trabaja.</p>
+  <div class="diferenciadores">
+    <div class="dif-card reveal"><div class="dif-num">01</div><div class="dif-title">PMO construida desde cero</div><div class="dif-desc">Diagnostiqué, diseñé e implementé una PMO completa en Plantaciones del Norte — desde FODA y mapa de stakeholders hasta sistemas de KPIs y análisis de capacidad del portafolio. Sin modelo previo, con recursos limitados.</div></div>
+    <div class="dif-card reveal"><div class="dif-num">02</div><div class="dif-title">Rigor científico + gestión operativa</div><div class="dif-desc">Diseño la metodología Y gestiono el sistema que la sostiene. Puedo hablar con equipos técnicos en su idioma sin perder la visión gerencial. Combino investigación aplicada con gestión de portafolio.</div></div>
+    <div class="dif-card reveal"><div class="dif-num">03</div><div class="dif-title">Números que respaldan todo</div><div class="dif-desc">40% de reducción en tiempo de reporte. Tope de 15 ensayos anuales calculado con días efectivos y factores de riesgo climático. Tasa de finalización del 56.25% analizada históricamente en 54 ensayos.</div></div>
+    <div class="dif-card reveal"><div class="dif-num">04</div><div class="dif-title">Vengo del territorio de CLAC</div><div class="dif-desc">Tesis con productores de cacao dominicano Fairtrade. Proyecto AWS con empresas bananeras bajo estándares internacionales. Formación en CATIE. República Dominicana es país miembro de CLAC.</div></div>
+    <div class="dif-card reveal"><div class="dif-num">05</div><div class="dif-title">Liderazgo con empoderamiento</div><div class="dif-desc">Evaluaciones uno a uno participativas donde me evalué a mí misma junto al equipo. El equipo co-diseñó las soluciones. Una PMO no funciona por imposición — funciona por adopción voluntaria.</div></div>
+    <div class="dif-card reveal"><div class="dif-num">06</div><div class="dif-title">Disposición de adopción como criterio</div><div class="dif-desc">En mi tesis evalué no solo qué prácticas funcionan técnicamente, sino cuáles pueden adoptarse en el contexto real del productor. Un proyecto que nadie implementa no tiene impacto.</div></div>
+    <div class="dif-card reveal"><div class="dif-num">07</div><div class="dif-title">Formulación de proyectos de desarrollo</div><div class="dif-desc">Cursé formulación de proyectos en CATIE — marco lógico, cadena de resultados, M&E, presupuestación — aplicados directamente a un proyecto real con productores dominicanos de cacao.</div></div>
+  </div>
+</section>
+
+<!-- LOGROS -->
+<section class="logros" id="logros">
+  <div class="section-label"><span>02 — Logros con números</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Resultados medibles</h2>
+  <p class="section-sub reveal">No afirmaciones — evidencia documentada de sistemas que funcionaron.</p>
+  <div class="metricas">
+    <div class="metrica-card reveal"><div class="metrica-num">40%</div><div class="metrica-label">Reducción en tiempo<br>de reporte mensual</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">5+</div><div class="metrica-label">Proyectos gestionados<br>en paralelo</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">15</div><div class="metrica-label">Ensayos anuales —<br>capacidad calculada</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">54</div><div class="metrica-label">Ensayos analizados<br>históricamente</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">3</div><div class="metrica-label">Empresas bananeras<br>coordinadas (Proyecto AWS)</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">6</div><div class="metrica-label">Dimensiones de KPIs<br>diseñadas para el departamento</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">242</div><div class="metrica-label">Días promedio por ensayo<br>— eficiencia analizada</div></div>
+    <div class="metrica-card reveal"><div class="metrica-num">56%</div><div class="metrica-label">Tasa de finalización<br>del portafolio activo</div></div>
+  </div>
+</section>
+
+<!-- PMO -->
+<section class="pmo-section" id="pmo">
+  <div class="section-label"><span>03 — La PMO que construí</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Una PMO de control,<br>construida desde cero</h2>
+  <p class="section-sub reveal">Sin estructura previa, con recursos limitados. Lo que construí en Plantaciones del Norte es exactamente lo que CLAC necesita fortalecer.</p>
+  <div class="pmo-grid">
+    <div class="pmo-pilares">
+      <div class="pilar reveal"><div class="pilar-icon">🔍</div><div class="pilar-content"><div class="pilar-title">Diagnóstico institucional</div><div class="pilar-desc">FODA participativo, mapa de stakeholders, matriz de priorización, diagrama de proceso completo desde identificación de necesidad hasta evaluación de impacto.</div></div></div>
+      <div class="pilar reveal"><div class="pilar-icon">🗺️</div><div class="pilar-content"><div class="pilar-title">Diseño organizacional</div><div class="pilar-desc">Misión, objetivos, líneas de investigación prioritarias, estructura de roles y responsabilidades.</div></div></div>
+      <div class="pilar reveal"><div class="pilar-icon">📊</div><div class="pilar-content"><div class="pilar-title">Análisis de capacidad del portafolio</div><div class="pilar-desc">260 días efectivos anuales, factor de corrección por ensayos en paralelo (+91%), factor de riesgo climático (+30-40%). Resultado: tope de 15 ensayos anuales.</div></div></div>
+      <div class="pilar reveal"><div class="pilar-icon">📈</div><div class="pilar-content"><div class="pilar-title">Sistema de KPIs en 6 dimensiones</div><div class="pilar-desc">Capacitación, equipamiento, protocolos, comunicación, productividad y satisfacción. Evaluación mensual con informe trimestral.</div></div></div>
+      <div class="pilar reveal"><div class="pilar-icon">💰</div><div class="pilar-content"><div class="pilar-title">Gestión presupuestaria estratégica</div><div class="pilar-desc">50% I+D, 30% equipamiento, 10% capacitación, 5% alianzas, 5% operación. Ejecución 90-100%, reportes trimestrales.</div></div></div>
+      <div class="pilar reveal"><div class="pilar-icon">👥</div><div class="pilar-content"><div class="pilar-title">Evaluación participativa del equipo</div><div class="pilar-desc">Entrevistas uno a uno con árbol de fortalezas y debilidades co-diseñadas. Me incluí a mí misma. Planes diferenciados por persona.</div></div></div>
+    </div>
+    <div class="pmo-quote reveal">
+      <div class="pmo-quote-text">Una PMO no estandariza el <em>qué</em> de los proyectos —<br>estandariza el <em>cómo</em> se gestionan.</div>
+      <p style="font-size:.88rem;color:var(--vp);line-height:1.6;margin-bottom:32px;">En CLAC, los proyectos de derechos humanos y los de producción sostenible tienen contenidos completamente distintos, pero pueden compartir la misma arquitectura de gestión.</p>
+      <div class="pmo-tipos">
+        <div class="pmo-tipo"><div class="pmo-tipo-dot activo"></div><div class="pmo-tipo-label"><strong>PMO de soporte</strong> — plantillas y documentación estándar ✓</div></div>
+        <div class="pmo-tipo"><div class="pmo-tipo-dot activo"></div><div class="pmo-tipo-label"><strong>PMO de control</strong> — seguimiento activo y medición de desempeño ✓</div></div>
+        <div class="pmo-tipo"><div class="pmo-tipo-dot activo"></div><div class="pmo-tipo-label"><strong>Elementos directivos</strong> — análisis de capacidad del portafolio ✓</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METODOLOGÍA -->
+<section class="metodologia" id="metodologia">
+  <div class="section-label"><span>04 — Metodología</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Ciclo completo de gestión</h2>
+  <p class="section-sub reveal">No una sola metodología — la combinación correcta para cada fase. Eso es madurez gerencial.</p>
+  <div class="ciclo reveal">
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">01</span></div><div class="ciclo-label">Diagnóstico del problema</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">02</span></div><div class="ciclo-label">Revisión de literatura</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">03</span></div><div class="ciclo-label">Protocolo y metodología</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">04</span></div><div class="ciclo-label">Presentación a gerencia</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">05</span></div><div class="ciclo-label">Implementación AGILE</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">06</span></div><div class="ciclo-label">Seguimiento y KPIs</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">07</span></div><div class="ciclo-label">Retroalimentación iterativa</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">08</span></div><div class="ciclo-label">Medición de impacto</div></div>
+    <div class="ciclo-step"><div class="ciclo-num-wrap"><span class="ciclo-num">09</span></div><div class="ciclo-label">Cierre y lecciones</div></div>
+  </div>
+  <div class="herramientas-grid reveal">
+    <div class="herramienta-tag"><span class="htag-icon">📋</span><span class="htag-label">Marco Lógico</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">🔄</span><span class="htag-label">AGILE / Sprints</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">📌</span><span class="htag-label">Kanban</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">📅</span><span class="htag-label">Diagrama de Gantt</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">💾</span><span class="htag-label">Supabase / Dashboard</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">📁</span><span class="htag-label">SharePoint</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">📊</span><span class="htag-label">R / INFOSTAT</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">🗺️</span><span class="htag-label">QGIS / ArcGIS</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">🏢</span><span class="htag-label">Office 365</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">🔍</span><span class="htag-label">Design Thinking</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">📐</span><span class="htag-label">PMDPro (en curso)</span></div>
+    <div class="herramienta-tag"><span class="htag-icon">💡</span><span class="htag-label">FODA / Stakeholders</span></div>
+  </div>
+</section>
+
+<!-- PORTAFOLIO -->
+<section class="portafolio" id="portafolio">
+  <div class="section-label"><span>05 — Portafolio de proyectos</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Trabajo real, documentado</h2>
+  <p class="section-sub reveal">Haz clic en cualquier proyecto para ver los documentos, videos y materiales de cada uno.</p>
+  <div class="proyectos-grid" id="proyectosGrid">
+    <!-- Populated dynamically -->
+  </div>
+</section>
+
+<!-- GALERÍA DE FOTOS -->
+<section class="galeria" id="galeria">
+  <div class="section-label"><span>06 — Galería</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Fotos</h2>
+  <p class="section-sub reveal">Imágenes del trabajo en campo, talleres, equipos y contexto.</p>
+
+  <!-- Upload zone (only visible in admin mode) -->
+  <div class="photo-upload-zone reveal" id="photoUploadZone"
+       onclick="triggerPhotoUpload()"
+       ondragover="photoDragOver(event)"
+       ondragleave="photoDragLeave(event)"
+       ondrop="photoDrop(event)">
+    <span class="puz-icon">📷</span>
+    <p>Arrastra fotos aquí o haz clic para seleccionar</p>
+    <small>JPG · PNG · WEBP — puedes subir varias a la vez</small>
+  </div>
+
+  <div id="photoGrid">
+    <!-- Populated dynamically -->
+  </div>
+</section>
+
+<!-- CLAC -->
+<section class="clac-section" id="clac">
+  <div class="section-label"><span>07 — Conexión con CLAC</span><div class="section-line"></div></div>
+  <h2 class="section-title reveal">Por qué exactamente CLAC</h2>
+  <p class="section-sub reveal">No llego a aprender el contexto — vengo de él. República Dominicana es país miembro de CLAC y trabajo directamente con el subsector productivo que CLAC representa.</p>
+  <div class="conexiones">
+    <div class="conexion-card reveal"><div class="conexion-icon">🍫</div><div class="conexion-title">Tesis con cacao Fairtrade</div><div class="conexion-desc">Mi investigación en CATIE trabajó con productores de cacao dominicano — <strong>el cacao dominicano es Fairtrade</strong>. Evalué prácticas de manejo con análisis costo-beneficio y disposición de adopción. CLAC representa exactamente a esos productores.</div></div>
+    <div class="conexion-card reveal"><div class="conexion-icon">💧</div><div class="conexion-title">Proyecto Alliance for Water Stewardship</div><div class="conexion-desc">Trabajé en certificación AWS con tres empresas bananeras coordinadas simultáneamente. <strong>Cinco dimensiones de sostenibilidad hídrica</strong>. Es la misma lógica de Fairtrade: estándares internacionales que los productores deben cumplir para acceder a mejores mercados.</div></div>
+    <div class="conexion-card reveal"><div class="conexion-icon">🌱</div><div class="conexion-title">Formulación de proyectos de desarrollo</div><div class="conexion-desc">Cursé formulación de proyectos en CATIE — <strong>marco lógico, cadena de resultados, M&amp;E y presupuestación</strong> — aplicados a un proyecto real. El mismo lenguaje que usan los donantes de CLAC.</div></div>
+    <div class="conexion-card reveal"><div class="conexion-icon">📐</div><div class="conexion-title">Disposición de adopción como criterio de diseño</div><div class="conexion-desc">Un proyecto que los productores no pueden adoptar no genera impacto. <strong>Ya sé cómo diseñar intervenciones evaluando la viabilidad real</strong> desde el principio.</div></div>
+  </div>
+</section>
+
+<!-- CIERRE -->
+<section class="cierre">
+  <h2 class="cierre-frase reveal">Construí una PMO sin ese nombre.<br>Ahora vengo a <em>fortalecerla</em><br>donde más importa.</h2>
+  <div class="cierre-contacto reveal">
+    <div class="contacto-item"><span>✉</span><strong>francisperalta0416@gmail.com</strong></div>
+    <div class="contacto-item"><span>📱</span><strong>+1 (809) 829-2577</strong></div>
+    <div class="contacto-item"><span>🔗</span><strong>linkedin.com/in/francis-peralta</strong></div>
+    <div class="contacto-item"><span>📍</span><strong>Valverde Mao, República Dominicana</strong></div>
+  </div>
+</section>
+
+<footer>
+  <span>Francis Javiela Peralta — Portafolio Profesional 2025</span>
+  <span>Candidata · Oficial de PMO · CLAC</span>
+</footer>
+
+<!-- FAB -->
+<button class="admin-fab" id="adminFab" onclick="toggleAdmin()">
+  <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.34.07-.68.07-1.08s-.03-.74-.07-1.08l2.32-1.82c.21-.16.27-.46.13-.69l-2.2-3.81a.52.52 0 0 0-.63-.22l-2.74 1.1c-.57-.44-1.18-.79-1.85-1.05L14.92 2.1a.52.52 0 0 0-.52-.44h-4.4a.52.52 0 0 0-.52.44l-.42 2.83c-.67.26-1.28.61-1.85 1.05L4.47 4.88a.52.52 0 0 0-.63.22L1.64 8.91c-.14.23-.08.53.13.69l2.32 1.82a8.3 8.3 0 0 0-.09 1.08c0 .35.03.69.08 1.08l-2.32 1.82c-.21.16-.27.46-.13.69l2.2 3.81c.13.23.4.31.63.22l2.74-1.1c.57.44 1.18.79 1.85 1.05l.42 2.83c.07.24.28.44.52.44h4.4c.24 0 .45-.2.52-.44l.42-2.83c.67-.26 1.28-.61 1.85-1.05l2.74 1.1c.23.09.5.01.63-.22l2.2-3.81c.14-.23.08-.53-.13-.69l-2.32-1.82z"/></svg>
+  Gestionar contenido
+</button>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <div class="ap-header">
+    <div><h2>Gestionar contenido</h2><p>Agrega proyectos, sube archivos o pega links</p></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="ap-close" onclick="toggleAdmin()">✕</button>
+    </div>
+  </div>
+  <div class="ap-body" id="apBody"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-desc" id="mDesc"></div>
+    </div>
+    <div class="modal-tabs" id="mTabs"></div>
+    <div class="modal-content" id="mContent"></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" style="display:none" multiple
+  accept="video/*,image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv">
+<input type="file" id="photoInput" style="display:none" multiple accept="image/*">
+
+<script>
+// ── SUPABASE CONFIG ───────────────────────────────────────
+const SUPABASE_URL = 'https://wvuyvrpajxcqwxdmwytg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2dXl2cnBhanhjcXd4ZG13eXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTM5MTUsImV4cCI6MjA5MzQ4OTkxNX0.Qgu_6rb_as6RLcFRByeSGeheHm-CVAyBt0EfeLDsvZs';
+const BUCKET = 'portfolio-media';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── CONSTANTS ────────────────────────────────────────────
+const EMOJIS = ['📋','🔍','📈','📊','💰','👥','🌿','🔬','🎯','⚗️','🗺️','🏆','🤝','🌱','💡','🎬','📌','🔗','📐','🧪'];
+const COLORS = [
+  'linear-gradient(135deg,#1B4332,#52796F)',
+  'linear-gradient(135deg,#B7883A,#E9C46A)',
+  'linear-gradient(135deg,#1565C0,#42A5F5)',
+  'linear-gradient(135deg,#2E7D32,#81C784)',
+  'linear-gradient(135deg,#4A148C,#9C27B0)',
+  'linear-gradient(135deg,#C62828,#EF9A9A)',
+  'linear-gradient(135deg,#00695C,#4DB6AC)',
+  'linear-gradient(135deg,#E65100,#FF9800)',
+  'linear-gradient(135deg,#1a237e,#5c6bc0)',
+  'linear-gradient(135deg,#263238,#546e7a)',
+];
+const BADGE_CLASS = {video:'mb-video',image:'mb-foto',pdf:'mb-pdf',word:'mb-word',excel:'mb-excel',powerpoint:'mb-ppt',link:'mb-link',other:'mb-pdf'};
+const TYPE_ICON   = {video:'🎬',image:'📷',pdf:'📄',word:'📝',excel:'📊',powerpoint:'📊',link:'🔗',other:'📁'};
+const TYPE_LABEL  = {video:'Video',image:'Foto',pdf:'PDF',word:'Word',excel:'Excel',powerpoint:'PPT',link:'Link',other:'Archivo'};
+
+// ── STATE ────────────────────────────────────────────────
+let mediaCache={};
+let customProjects=[];
+let adminMode=false;
+let currentUser=null;
+let newProjEmoji='📋';
+let newProjColor=0;
+let currentUploadPid=null;
+
+// ── INIT ─────────────────────────────────────────────────
+async function init(){
+  const {data:{session}}=await db.auth.getSession();
+  if(session) currentUser=session.user;
+  await loadAll();
+  renderPortfolio();
+  renderPhotos();
+  updateWelcomeVideo();
+  setupReveal();
+  setupCounters();
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeModal();closeLightbox();if(adminMode)toggleAdmin();}
+  });
+}
+
+async function loadAll(){
+  try{
+    const [{data:projs},{data:media}]=await Promise.all([
+      db.from('projects').select('*').eq('is_published',true)
+        .order('sort_order',{ascending:true}).order('created_at',{ascending:true}),
+      db.from('media_items').select('*')
+        .order('sort_order',{ascending:true}).order('created_at',{ascending:true})
+    ]);
+    customProjects=projs||[];
+    mediaCache={};
+    for(const item of (media||[])){
+      const key=item.project_id||item.section_key;
+      if(!key) continue;
+      if(!mediaCache[key]) mediaCache[key]=[];
+      mediaCache[key].push(item);
+    }
+  }catch(e){console.error('Supabase load error:',e);}
+}
+
+// ── FILE UTILS ───────────────────────────────────────────
+function getFileType(name){
+  const e=name.split('.').pop().toLowerCase();
+  if(['mp4','mov','avi','webm','mkv','m4v'].includes(e)) return 'video';
+  if(['jpg','jpeg','png','gif','webp','bmp'].includes(e)) return 'image';
+  if(e==='pdf') return 'pdf';
+  if(['doc','docx'].includes(e)) return 'word';
+  if(['xls','xlsx','csv'].includes(e)) return 'excel';
+  if(['ppt','pptx'].includes(e)) return 'powerpoint';
+  return 'other';
+}
+function fmtSize(b){if(!b)return'';return b<1048576?(b/1024).toFixed(0)+' KB':(b/1048576).toFixed(1)+' MB';}
+function getLinkType(u){
+  if(/youtube\.com|youtu\.be/.test(u)) return 'youtube';
+  if(/vimeo\.com/.test(u)) return 'vimeo';
+  if(/drive\.google\.com/.test(u)) return 'gdrive';
+  if(/docs\.google\.com\/presentation/.test(u)) return 'gslides';
+  if(/canva\.com\/design\//.test(u)) return 'canva';
+  return 'external';
+}
+function getEmbedUrl(u){
+  const t=getLinkType(u);
+  if(t==='youtube'){const m=u.match(/(?:v=|youtu\.be\/)([^&\s?#]+)/);return m?`https://www.youtube.com/embed/${m[1]}?rel=0`:null;}
+  if(t==='vimeo'){const m=u.match(/vimeo\.com\/(\d+)/);return m?`https://player.vimeo.com/video/${m[1]}`:null;}
+  if(t==='gdrive'){const m=u.match(/\/d\/([^\/\?]+)/);return m?`https://drive.google.com/file/d/${m[1]}/preview`:null;}
+  if(t==='gslides') return u.replace(/\/edit.*$/,'/embed');
+  if(t==='canva') return u.replace(/\?.*$/,'').replace(/\/view$/,'/view')+'?embed';
+  return null;
+}
+function getLinkIcon(u){
+  const t=getLinkType(u);
+  return t==='youtube'?'▶️':t==='vimeo'?'🎬':t==='gdrive'?'☁️':t==='gslides'?'📊':t==='canva'?'🎨':'🔗';
+}
+
+// ── ADMIN AUTH ────────────────────────────────────────────
+const ADMIN_PASS='portafolio2026';
+
+function adminLogin(){
+  const pass=document.getElementById('adminPassword')?.value;
+  const errEl=document.getElementById('loginError');
+  if(pass===ADMIN_PASS){
+    currentUser=true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('welcomeEditBtn').style.display='block';
+    renderAdminPanel();renderPortfolio();renderPhotos();
+    showToast('✓ Modo admin activo','ok');
+  } else {
+    if(errEl) errEl.textContent='Contraseña incorrecta';
+  }
+}
+
+function adminLogout(){
+  currentUser=false;adminMode=false;
+  document.getElementById('adminPanel').classList.remove('open');
+  document.getElementById('adminFab').classList.remove('active');
+  document.body.classList.remove('admin-mode');
+  document.getElementById('welcomeEditBtn').style.display='none';
+  renderPortfolio();renderPhotos();
+  showToast('Sesión cerrada','');
+}
+
+// ── ADMIN TOGGLE ─────────────────────────────────────────
+function toggleAdmin(){
+  adminMode=!adminMode;
+  document.getElementById('adminPanel').classList.toggle('open',adminMode);
+  document.getElementById('adminFab').classList.toggle('active',adminMode);
+  if(currentUser){
+    document.body.classList.toggle('admin-mode',adminMode);
+    document.getElementById('welcomeEditBtn').style.display=adminMode?'block':'none';
+    renderPortfolio();
+    renderPhotos();
+  }
+  if(adminMode) renderAdminPanel();
+}
+
+function openAdminAt(pid){
+  if(!adminMode) toggleAdmin();
+  else renderAdminPanel();
+  setTimeout(()=>{
+    const el=document.getElementById('ap-sec-'+pid);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});if(!el.classList.contains('expanded'))el.querySelector('.ap-project-head').click();}
+  },250);
+}
+
+// ── ADMIN PANEL RENDER ────────────────────────────────────
+function renderAdminPanel(){
+  const body=document.getElementById('apBody');
+  body.innerHTML='';
+  if(!currentUser){
+    body.innerHTML=`<div class="ap-login">
+      <div style="text-align:center;font-size:2.5rem;margin-bottom:4px">🔐</div>
+      <h3 style="text-align:center;font-family:'Playfair Display',serif;color:var(--vb);font-size:1rem;margin-bottom:2px">Acceso administrador</h3>
+      <p style="text-align:center;font-size:.78rem;color:var(--gris)">Ingresa la contraseña para editar</p>
+      <input class="ap-login-input" type="password" id="adminPassword" placeholder="Contraseña"
+        onkeydown="if(event.key==='Enter')adminLogin()">
+      <div class="ap-login-error" id="loginError"></div>
+      <button class="ap-login-btn" onclick="adminLogin()">Entrar</button>
+    </div>`;
+    return;
+  }
+  body.innerHTML=`<div style="background:linear-gradient(135deg,rgba(27,67,50,.09),rgba(183,136,58,.06));border:1px solid rgba(27,67,50,.22);border-radius:12px;padding:14px 16px;margin-bottom:12px">
+    <div style="font-weight:700;color:var(--vb);margin-bottom:5px;font-size:.83rem">✅ Contenido guardado en Supabase</div>
+    <div style="font-size:.78rem;color:var(--gris);line-height:1.55">Todo lo que agregues aquí es visible para <strong style="color:var(--vb)">cualquier persona</strong> que abra el link.</div>
+    <button onclick="adminLogout()" style="margin-top:8px;background:none;border:1px solid var(--vp);border-radius:6px;padding:4px 12px;font-size:.72rem;color:var(--gris);cursor:pointer;font-family:'DM Sans',sans-serif">Cerrar sesión</button>
+  </div>`;
+  body.innerHTML+=`
+    <button class="ap-new-proj-btn" onclick="toggleNewProjForm()">＋ Nuevo proyecto</button>
+    <div class="ap-new-proj-form" id="newProjForm">
+      <label class="ap-form-label">Nombre del proyecto</label>
+      <input class="ap-form-input" id="npName" placeholder="Ej: Diagnóstico institucional PMO">
+      <label class="ap-form-label">Categoría</label>
+      <input class="ap-form-input" id="npCat" placeholder="Ej: Gestión de proyectos">
+      <label class="ap-form-label">Ícono</label>
+      <div class="ap-emoji-row">${EMOJIS.map(e=>`<div class="ap-emoji-opt${e===newProjEmoji?' sel':''}" onclick="selectEmoji('${e}')">${e}</div>`).join('')}</div>
+      <label class="ap-form-label">Color</label>
+      <div class="ap-color-row">${COLORS.map((c,i)=>`<div class="ap-color-opt${i===newProjColor?' sel':''}" style="background:${c}" onclick="selectColor(${i})"></div>`).join('')}</div>
+      <div class="ap-form-actions">
+        <button class="ap-form-save" onclick="saveNewProject()">Crear proyecto</button>
+        <button class="ap-form-cancel" onclick="toggleNewProjForm()">Cancelar</button>
+      </div>
+    </div>
+    <div class="ap-divider">Secciones fijas</div>`;
+  ['welcome','gallery'].forEach(pid=>{
+    const label=pid==='welcome'?{emoji:'🎬',name:'Video de bienvenida',cat:'Sección de presentación'}:{emoji:'📷',name:'Galería de fotos',cat:'Imágenes generales'};
+    body.appendChild(buildApSection(pid,label.emoji,label.name,label.cat,false));
+  });
+  if(customProjects.length>0){
+    const div=document.createElement('div');
+    div.className='ap-divider';div.textContent='Proyectos';
+    body.appendChild(div);
+    customProjects.forEach(p=>body.appendChild(buildApSection(p.id,p.emoji,p.name,p.cat,true)));
+  }
+}
+
+function buildApSection(pid,emoji,name,cat,canDelete){
+  const items=mediaCache[pid]||[];
+  const div=document.createElement('div');
+  div.className='ap-project';div.id='ap-sec-'+pid;
+  const shortName=name.length>42?name.slice(0,42)+'…':name;
+  const countClass=items.length===0?' empty':'';
+  div.innerHTML=`
+    <div class="ap-project-head" onclick="toggleApSection('${pid}')">
+      <div class="ap-ph-left">
+        <span class="ap-emoji">${emoji}</span>
+        <div><div class="ap-proj-name">${shortName}</div><div class="ap-proj-cat">${cat}</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px">
+        ${canDelete?`<button style="background:none;border:none;cursor:pointer;color:#6b7280;font-size:.85rem;padding:4px 6px;border-radius:6px" onmouseenter="this.style.color='#dc2626'" onmouseleave="this.style.color='#6b7280'" onclick="event.stopPropagation();deleteProject('${pid}')">🗑️</button>`:''}
+        <span class="ap-count${countClass}">${items.length}</span>
+        <span class="ap-chevron">▼</span>
+      </div>
+    </div>
+    <div class="ap-project-body">
+      <div class="ap-media-list" id="apl-${pid}">${renderApList(pid)}</div>
+      <div class="ap-add-area">
+        <button class="ap-add-btn" style="border-color:var(--vs);color:var(--vs);font-weight:600" onclick="toggleLinkForm('${pid}')">🔗 Link</button>
+        <button class="ap-add-btn" onclick="triggerFileUpload('${pid}')">📁 Subir archivo</button>
+      </div>
+      <div class="ap-link-form" id="alf-${pid}">
+        <input class="ap-link-input" id="alurl-${pid}" placeholder="https://youtube.com/... o Google Drive..." type="url">
+        <input class="ap-link-name" id="alname-${pid}" placeholder="Nombre (opcional)">
+        <div class="ap-link-actions">
+          <button class="ap-link-save" onclick="saveLink('${pid}')">Guardar</button>
+          <button class="ap-link-cancel" onclick="toggleLinkForm('${pid}')">Cancelar</button>
+        </div>
+      </div>
+      <div class="drop-zone" id="adz-${pid}"
+           ondragover="dzOver(event,'${pid}')" ondragleave="dzLeave('${pid}')" ondrop="dzDrop(event,'${pid}')"
+           onclick="triggerFileUpload('${pid}')">
+        <div class="dz-icon">📂</div><p>Arrastra o haz clic para subir</p>
+        <small>video · foto · PDF · Word · Excel · PPT</small>
+      </div>
+    </div>`;
+  return div;
+}
+
+function renderApList(pid){
+  const items=mediaCache[pid]||[];
+  if(!items.length) return `<div class="ap-empty">Sin archivos — usa los botones de abajo</div>`;
+  return items.map(item=>{
+    const icon=item.type==='link'?getLinkIcon(item.url):TYPE_ICON[item.file_type]||'📁';
+    const meta=item.type==='link'?(item.url.length>35?item.url.slice(0,35)+'…':item.url):fmtSize(item.file_size)||item.file_type;
+    return `<div class="ap-media-item">
+      <span class="ap-mi-icon">${icon}</span>
+      <div class="ap-mi-info"><div class="ap-mi-name">${item.name}</div><div class="ap-mi-meta">${meta}</div></div>
+      <button class="ap-mi-del" onclick="deleteMedia('${item.id}','${pid}')">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleApSection(pid){document.getElementById('ap-sec-'+pid)?.classList.toggle('expanded');}
+function toggleNewProjForm(){document.getElementById('newProjForm').classList.toggle('open');}
+function selectEmoji(e){newProjEmoji=e;document.querySelectorAll('.ap-emoji-opt').forEach(el=>el.classList.toggle('sel',el.textContent===e));}
+function selectColor(i){newProjColor=i;document.querySelectorAll('.ap-color-opt').forEach((el,idx)=>el.classList.toggle('sel',idx===i));}
+
+async function saveNewProject(){
+  if(!currentUser){showToast('Debes iniciar sesión','err');return;}
+  const name=document.getElementById('npName').value.trim();
+  const cat=document.getElementById('npCat').value.trim();
+  if(!name){showToast('Escribe un nombre','err');return;}
+  const{data,error}=await db.from('projects').insert({name,cat:cat||'Proyecto',emoji:newProjEmoji,color:COLORS[newProjColor]}).select().single();
+  if(error){showToast('Error: '+error.message,'err');return;}
+  customProjects.push(data);
+  document.getElementById('npName').value='';document.getElementById('npCat').value='';
+  toggleNewProjForm();renderAdminPanel();renderPortfolio();
+  showToast('✓ Proyecto creado','ok');
+  setTimeout(()=>openAdminAt(data.id),300);
+}
+
+async function deleteProject(id){
+  if(!currentUser||!confirm('¿Eliminar este proyecto y todos sus archivos?')) return;
+  const paths=(mediaCache[id]||[]).filter(i=>i.storage_path).map(i=>i.storage_path);
+  if(paths.length) await db.storage.from(BUCKET).remove(paths);
+  const{error}=await db.from('projects').delete().eq('id',id);
+  if(error){showToast('Error: '+error.message,'err');return;}
+  delete mediaCache[id];
+  customProjects=customProjects.filter(p=>p.id!==id);
+  renderAdminPanel();renderPortfolio();
+  showToast('Proyecto eliminado','');
+}
+
+// ── FILE UPLOAD ───────────────────────────────────────────
+function triggerFileUpload(pid){
+  currentUploadPid=pid;
+  document.getElementById('adz-'+pid)?.classList.toggle('open');
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileInput').onchange=e=>handleFiles(e.target.files,pid);
+  document.getElementById('fileInput').click();
+}
+function dzOver(e,pid){e.preventDefault();document.getElementById('adz-'+pid)?.classList.add('drag-over');}
+function dzLeave(pid){document.getElementById('adz-'+pid)?.classList.remove('drag-over');}
+function dzDrop(e,pid){e.preventDefault();dzLeave(pid);handleFiles(e.dataTransfer.files,pid);}
+
+async function handleFiles(fileList,pid){
+  if(!currentUser){showToast('Debes iniciar sesión','err');return;}
+  const files=Array.from(fileList);
+  showToast('Subiendo…','');
+  for(const file of files) await uploadFile(file,pid);
+  afterMediaChange(pid);
+  showToast(`✓ ${files.length} archivo${files.length>1?'s':''} subido${files.length>1?'s':''}`, 'ok');
+}
+
+async function uploadFile(file,pid){
+  const ft=getFileType(file.name);
+  const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=`${pid}/${Date.now()}-${safe}`;
+  const{error:upErr}=await db.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false});
+  if(upErr){showToast('Error: '+upErr.message,'err');return;}
+  const{data:{publicUrl}}=db.storage.from(BUCKET).getPublicUrl(path);
+  const isSection=pid==='welcome'||pid==='gallery';
+  const itemData={type:'file',file_type:ft,name:file.name,url:publicUrl,storage_path:path,file_size:file.size,mime_type:file.type,
+    ...(isSection?{section_key:pid}:{project_id:pid})};
+  const{data,error}=await db.from('media_items').insert(itemData).select().single();
+  if(error){showToast('Error guardando: '+error.message,'err');return;}
+  if(!mediaCache[pid]) mediaCache[pid]=[];
+  mediaCache[pid].push(data);
+}
+
+// ── LINK SAVE ─────────────────────────────────────────────
+function toggleLinkForm(pid){document.getElementById('alf-'+pid)?.classList.toggle('open');}
+
+async function saveLink(pid){
+  if(!currentUser){showToast('Debes iniciar sesión','err');return;}
+  const url=document.getElementById('alurl-'+pid)?.value.trim();
+  if(!url){showToast('Ingresa una URL','err');return;}
+  const name=document.getElementById('alname-'+pid)?.value.trim()||url;
+  const isSection=pid==='welcome'||pid==='gallery';
+  const itemData={type:'link',file_type:'link',name,url,
+    ...(isSection?{section_key:pid}:{project_id:pid})};
+  const{data,error}=await db.from('media_items').insert(itemData).select().single();
+  if(error){showToast('Error: '+error.message,'err');return;}
+  if(!mediaCache[pid]) mediaCache[pid]=[];
+  mediaCache[pid].push(data);
+  document.getElementById('alurl-'+pid).value='';
+  document.getElementById('alname-'+pid).value='';
+  toggleLinkForm(pid);afterMediaChange(pid);
+  showToast('✓ Link agregado','ok');
+}
+
+// ── DELETE MEDIA ──────────────────────────────────────────
+async function deleteMedia(id,pid){
+  if(!currentUser) return;
+  const item=(mediaCache[pid]||[]).find(i=>i.id===id);
+  if(item?.storage_path) await db.storage.from(BUCKET).remove([item.storage_path]);
+  const{error}=await db.from('media_items').delete().eq('id',id);
+  if(error){showToast('Error: '+error.message,'err');return;}
+  if(mediaCache[pid]) mediaCache[pid]=mediaCache[pid].filter(i=>i.id!==id);
+  afterMediaChange(pid);showToast('Eliminado','');
+}
+
+function afterMediaChange(pid){
+  const el=document.getElementById('apl-'+pid);
+  if(el) el.innerHTML=renderApList(pid);
+  const sec=document.getElementById('ap-sec-'+pid);
+  if(sec){
+    const badge=sec.querySelector('.ap-count');
+    const n=(mediaCache[pid]||[]).length;
+    badge.textContent=n;badge.className='ap-count'+(n===0?' empty':'');
+  }
+  if(pid==='welcome') updateWelcomeVideo();
+  if(pid==='gallery') renderPhotos();
+  const badgeEl=document.getElementById('badges-'+pid);
+  if(badgeEl) badgeEl.innerHTML=buildBadges(pid);
+}
+
+// ── WELCOME VIDEO ─────────────────────────────────────────
+function updateWelcomeVideo(){
+  const items=mediaCache['welcome']||[];
+  const container=document.getElementById('welcomeContainer');
+  const empty=document.getElementById('welcomeEmpty');
+  container.querySelectorAll('video,iframe').forEach(e=>e.remove());
+  if(!items.length){empty.style.display='flex';return;}
+  empty.style.display='none';
+  const item=items[0];let el=null;
+  if(item.type==='link'){
+    const embed=getEmbedUrl(item.url);
+    if(embed){el=document.createElement('iframe');el.src=embed;el.setAttribute('allowfullscreen','');el.style.cssText='width:100%;aspect-ratio:16/9;display:block;border:none';}
+  } else if(item.file_type==='video'&&item.url){
+    el=document.createElement('video');el.controls=true;el.preload='metadata';
+    el.style.cssText='width:100%;aspect-ratio:16/9;display:block';
+    const s=document.createElement('source');s.src=item.url;s.type='video/mp4';el.appendChild(s);
+  }
+  if(el) container.appendChild(el);
+  else empty.style.display='flex';
+}
+
+// ── PORTFOLIO ─────────────────────────────────────────────
+function renderPortfolio(){
+  const grid=document.getElementById('proyectosGrid');
+  grid.innerHTML='';
+  if(!customProjects.length){
+    grid.innerHTML=`<div class="empty-portfolio">
+      <span>${adminMode&&currentUser?'➕':'📂'}</span>
+      <p>${adminMode&&currentUser?'Crea tu primer proyecto':'Portafolio de proyectos'}</p>
+      <small>${adminMode&&currentUser?'Usa el botón "Nuevo proyecto" en el panel lateral':'Los proyectos aparecerán aquí'}</small>
+    </div>`;
+    return;
+  }
+  customProjects.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='proyecto-card';card.id='card-'+p.id;
+    card.onclick=()=>(adminMode&&currentUser)?openAdminAt(p.id):openModal(p.id);
+    card.innerHTML=`
+      <div class="proyecto-thumb" style="background:${p.color||COLORS[0]}">
+        <span>${p.emoji}</span>
+        <div class="play-overlay"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="card-edit-overlay">
+          <button class="card-edit-btn" onclick="event.stopPropagation();openAdminAt('${p.id}')">✏️ Editar</button>
+          <button class="card-del-btn" onclick="event.stopPropagation();deleteProject('${p.id}')">🗑️ Eliminar</button>
+        </div>
+      </div>
+      <div class="proyecto-body">
+        <div class="proyecto-categoria">${p.cat}</div>
+        <div class="proyecto-titulo">${p.name}</div>
+        <div class="media-badges" id="badges-${p.id}">${buildBadges(p.id)}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  setupReveal();
+}
+
+function buildBadges(pid){
+  const items=mediaCache[pid]||[];
+  if(!items.length) return `<span style="font-size:.75rem;color:var(--vp)">${adminMode&&currentUser?'Clic para agregar':'Sin archivos aún'}</span>`;
+  const types=[...new Set(items.map(i=>i.file_type))];
+  return types.map(t=>`<span class="media-badge ${BADGE_CLASS[t]||'mb-pdf'}">${TYPE_ICON[t]} ${TYPE_LABEL[t]}</span>`).join('');
+}
+
+// ── PHOTOS GALLERY ────────────────────────────────────────
+function renderPhotos(){
+  const photos=(mediaCache['gallery']||[]).filter(i=>i.file_type==='image'||i.file_type==='video');
+  const grid=document.getElementById('photoGrid');
+  if(!photos.length){
+    grid.innerHTML=`<div class="photo-grid-empty">
+      <span>${adminMode&&currentUser?'📤':'📷'}</span>
+      <p>${adminMode&&currentUser?'Sube tus fotos arriba':'Galería de fotos'}</p>
+      <small>${adminMode&&currentUser?'JPG, PNG, WEBP':'Las fotos aparecerán aquí'}</small>
+    </div>`;
+    return;
+  }
+  grid.innerHTML=`<div class="photo-grid">${photos.map(item=>{
+    if(!item.url) return '';
+    return `<div class="photo-item" onclick="openLightbox('${item.url}')">
+      <img src="${item.url}" alt="${item.name}" loading="lazy">
+      <button class="photo-del-btn" onclick="event.stopPropagation();deleteMedia('${item.id}','gallery')">✕</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function triggerPhotoUpload(){
+  document.getElementById('photoInput').value='';
+  document.getElementById('photoInput').onchange=e=>handlePhotoFiles(e.target.files);
+  document.getElementById('photoInput').click();
+}
+function photoDragOver(e){e.preventDefault();document.getElementById('photoUploadZone').classList.add('drag-over');}
+function photoDragLeave(e){document.getElementById('photoUploadZone').classList.remove('drag-over');}
+function photoDrop(e){e.preventDefault();photoDragLeave(e);handlePhotoFiles(e.dataTransfer.files);}
+
+async function handlePhotoFiles(fileList){
+  if(!currentUser){showToast('Debes iniciar sesión','err');return;}
+  const files=Array.from(fileList).filter(f=>f.type.startsWith('image/'));
+  showToast('Subiendo fotos…','');
+  for(const file of files) await uploadFile(file,'gallery');
+  renderPhotos();afterMediaChange('gallery');
+  showToast(`✓ ${files.length} foto${files.length>1?'s':''} subida${files.length>1?'s':''}`, 'ok');
+}
+
+// ── MODAL ─────────────────────────────────────────────────
+function openModal(pid){
+  const proj=customProjects.find(p=>p.id===pid);
+  if(!proj) return;
+  const items=mediaCache[pid]||[];
+  document.getElementById('mCat').textContent=proj.cat;
+  document.getElementById('mTitle').textContent=proj.name;
+  document.getElementById('mDesc').textContent=proj.description||'';
+  const tabsEl=document.getElementById('mTabs');
+  const contentEl=document.getElementById('mContent');
+  tabsEl.innerHTML='';contentEl.innerHTML='';
+  if(!items.length){
+    contentEl.innerHTML=`<div class="modal-empty"><span>📂</span><strong>Sin archivos aún</strong><span style="font-size:.85rem;color:var(--gris)">El administrador puede agregar materiales a este proyecto</span></div>`;
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow='hidden';return;
+  }
+  const G_ORDER=['video','image','pdf','powerpoint','word','excel','link','other'];
+  const G_LABEL={video:'🎬 Videos',image:'📷 Fotos',pdf:'📄 PDFs',powerpoint:'📊 Presentaciones',word:'📝 Word',excel:'🗄️ Excel',link:'🔗 Links',other:'📁 Archivos'};
+  const groups={};
+  items.forEach(i=>{const g=i.file_type||'other';if(!groups[g])groups[g]=[];groups[g].push(i);});
+  G_ORDER.filter(g=>groups[g]).forEach((g,i)=>{
+    const tab=document.createElement('button');
+    tab.className='modal-tab'+(i===0?' active':'');
+    tab.textContent=G_LABEL[g];tab.onclick=()=>switchTab(i);
+    tabsEl.appendChild(tab);
+    const panel=document.createElement('div');
+    panel.className='tab-panel'+(i===0?' active':'');
+    panel.innerHTML=buildTabHtml(g,groups[g]);
+    contentEl.appendChild(panel);
+  });
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function buildTabHtml(type,items){
+  if(type==='video') return items.map(item=>{
+    if(item.type==='link'){const e=getEmbedUrl(item.url);return e?`<div class="media-video-wrap"><iframe src="${e}" allowfullscreen></iframe></div><p style="font-size:.8rem;color:var(--gris);margin-bottom:20px">${item.name}</p>`:`<a href="${item.url}" target="_blank" class="dl-item"><span class="dl-icon-big">🎬</span><div class="dl-info"><div class="dl-name">${item.name}</div><div class="dl-meta">${item.url}</div></div><span class="dl-action">Abrir ↗</span></a>`;}
+    return item.url?`<div class="media-video-wrap"><video controls preload="metadata"><source src="${item.url}" type="video/mp4"></video></div><p style="font-size:.8rem;color:var(--gris);margin-bottom:16px">${item.name}</p>`:'';
+  }).join('');
+  if(type==='image') return `<div class="media-gallery">${items.map(item=>item.url?`<div class="gallery-img" onclick="openLightbox('${item.url}')"><img src="${item.url}" alt="${item.name}"></div>`:'').join('')}</div>`;
+  if(type==='pdf') return items.map(item=>item.url?`<div class="media-pdf-wrap"><iframe src="${item.url}"></iframe></div><div class="media-downloads" style="margin-bottom:16px"><a class="dl-item" href="${item.url}" target="_blank"><span class="dl-icon-big">📄</span><div class="dl-info"><div class="dl-name">${item.name}</div><div class="dl-meta">${fmtSize(item.file_size)}</div></div><span class="dl-action">Abrir ↗</span></a></div>`:'').join('');
+  if(type==='link') return `<div class="media-links">${items.map(buildLinkRow).join('')}</div>`;
+  return `<div class="media-downloads">${items.map(item=>item.url?`<a class="dl-item" href="${item.url}" target="_blank"><span class="dl-icon-big">${TYPE_ICON[type]||'📁'}</span><div class="dl-info"><div class="dl-name">${item.name}</div><div class="dl-meta">${fmtSize(item.file_size)}</div></div><span class="dl-action">Abrir ↗</span></a>`:'').join('')}</div>`;
+}
+
+function buildLinkRow(item){
+  return `<a href="${item.url}" target="_blank" class="link-item"><span class="link-icon">${getLinkIcon(item.url||'')}</span><div class="link-info"><div class="link-name">${item.name}</div><div class="link-url">${item.url||''}</div></div><span class="link-open">Abrir ↗</span></a>`;
+}
+
+function switchTab(i){
+  document.querySelectorAll('.modal-tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.tab-panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  document.querySelectorAll('#modalBox video').forEach(v=>v.pause());
+}
+function handleOverlayClick(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+// ── LIGHTBOX ──────────────────────────────────────────────
+function openLightbox(src){document.getElementById('lbImg').src=src;document.getElementById('lightbox').classList.add('open');}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+
+// ── TOAST ─────────────────────────────────────────────────
+let _tt;
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+// ── REVEAL / COUNTERS ─────────────────────────────────────
+function setupReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const idx=Array.from(entry.target.parentNode.children).indexOf(entry.target);
+      setTimeout(()=>entry.target.classList.add('visible'),80*(idx%4));
+      obs.unobserve(entry.target);
+    });
+  },{threshold:.1});
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
+}
+function setupCounters(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const el=entry.target, text=el.textContent;
+      const num=parseInt(text.replace(/[^0-9]/g,''));
+      const suf=text.includes('%')?'%':(text.includes('+')?'+':'');
+      let s=0;
+      const step=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/1800,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*num)+suf;if(p<1)requestAnimationFrame(step);};
+      requestAnimationFrame(step);
+      obs.unobserve(el);
+    });
+  },{threshold:.5});
+  document.querySelectorAll('.metrica-num').forEach(el=>obs.observe(el));
+}
+
+init();
+</script>
+</body>
+</html>
